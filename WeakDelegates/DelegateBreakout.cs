@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using static WeakDelegates.DependentHandlerStatic;
 
 namespace WeakDelegates
 {
