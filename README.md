@@ -17,7 +17,13 @@ namespace WeakDelegates
     public static T Combine<T>(T a, T b) where T : class;
     // Usage is the same as System.Delegate.Remove(Delegate, Delegate);
     public static T Remove<T>(T source, T value) where T : class;
+    // This method is psuedo code.
+    // In reality it's a bunch of generated methods for common
+    // delegate types of this form.
+    public static T Weak<T>(T @delegate) where T : delegate;
 }
 ```
 
 Documentation for the same named static methods on `System.Delegate` should be the same. Only real difference is that I use generics and inforce that it must be a delegate type at run-time instead of forcing you to do lots of casting.
+
+The `T Weak<T>(T @delegate)` methods simply call `T Combine<T>(T a, T b)` with `a` set to `null` and `b` set to `@delegate`. The main advantage of using them is that you don't have to provide type arguments.
