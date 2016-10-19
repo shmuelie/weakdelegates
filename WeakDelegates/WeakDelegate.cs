@@ -70,7 +70,7 @@ namespace WeakDelegates
             il.Emit(OpCodes.Call, typeof(WeakDelegate).GetMethod(nameof(GetCombinedHolder), BindingFlags.NonPublic | BindingFlags.Static));
             il.Emit(OpCodes.Brfalse_S, @return);
             il.Emit(OpCodes.Ldloc_S, holder);
-            il.Emit(OpCodes.Call, typeof(WeakDelegateSuragate).GetMethod(nameof(WeakDelegateSuragate.GetInvocationList), BindingFlags.NonPublic | BindingFlags.Instance));
+            il.Emit(OpCodes.Call, typeof(WeakDelegateSuragate).GetMethod(nameof(WeakDelegateSuragate.GetInvocationList), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public));
             il.Emit(OpCodes.Brfalse_S, @return);
             il.Emit(OpCodes.Castclass, typeof(T));
             for (int argIndex = 0; argIndex < dynamic.GetParameters().Length; argIndex++)
