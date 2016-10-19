@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace WeakDelegates
 {
-    public static class WeakDelegate
+    public static partial class WeakDelegate
     {
         private static readonly ConditionalWeakTable<MethodBase, WeakReference<WeakDelegateSuragate>> suragates = new ConditionalWeakTable<MethodBase, WeakReference<WeakDelegateSuragate>>();
         private static readonly ConditionalWeakTable<object, WeakDelegateSuragate> weakReference = new ConditionalWeakTable<object, WeakDelegateSuragate>();
