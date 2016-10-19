@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using WeakDelegates;
+using static WeakDelegates.WeakDelegate;
 
 namespace WeakTest
 {
@@ -22,7 +22,7 @@ namespace WeakTest
         {
             ObservableCollection<int> collection = new ObservableCollection<int>();
             TestClass testInstance = new TestClass();
-            collection.CollectionChanged += WeakDelegate.Combine(null, new NotifyCollectionChangedEventHandler(testInstance.Handle));
+            collection.CollectionChanged += Weak(testInstance.Handle);
             GC.Collect();
             collection.Add(1);
             testInstance = new TestClass();
