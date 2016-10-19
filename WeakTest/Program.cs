@@ -17,6 +17,7 @@ namespace WeakTest
             }
         }
 
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoOptimization)]
         public static void Main()
         {
             ObservableCollection<int> collection = new ObservableCollection<int>();
