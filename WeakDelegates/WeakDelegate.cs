@@ -64,33 +64,37 @@ namespace WeakDelegates
             DynamicMethod dynamic = new DynamicMethod(string.Empty, signature.ReturnType == typeof(void) ? null : signature.ReturnType, signature.GetParameters().Select(getParameterType).ToArray(), typeof(WeakDelegate));
             ILGenerator il = dynamic.GetILGenerator();
             LocalBuilder holder = il.DeclareLocal(typeof(WeakDelegateSuragate));
-            Label @return = il.DefineLabel();
+            Label noSuragate = il.DefineLabel();
+            Label noDelegates = il.DefineLabel();
             il.Emit(OpCodes.Call, typeof(MethodBase).GetMethod(nameof(MethodBase.GetCurrentMethod)));
             il.Emit(OpCodes.Ldloca_S, holder);
             il.Emit(OpCodes.Call, typeof(WeakDelegate).GetMethod(nameof(GetCombinedHolder), BindingFlags.NonPublic | BindingFlags.Static));
-            il.Emit(OpCodes.Brfalse_S, @return);
+            il.Emit(OpCodes.Brfalse_S, noSuragate);
             il.Emit(OpCodes.Ldloc_S, holder);
-            il.Emit(OpCodes.Call, typeof(WeakDelegateSuragate).GetMethod(nameof(WeakDelegateSuragate.GetInvocationList), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public));
-            il.Emit(OpCodes.Brfalse_S, @return);
+            il.Emit(OpCodes.Callvirt, typeof(WeakDelegateSuragate).GetMethod(nameof(WeakDelegateSuragate.GetInvocationList), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public));
             il.Emit(OpCodes.Castclass, typeof(T));
+            il.Emit(OpCodes.Dup);
+            il.Emit(OpCodes.Brfalse_S, noDelegates);
             for (int argIndex = 0; argIndex < dynamic.GetParameters().Length; argIndex++)
             {
                 il.Emit(OpCodes.Ldarg, argIndex);
             }
             il.Emit(OpCodes.Callvirt, typeof(T).GetMethod("Invoke"));
+            il.Emit(OpCodes.Ret);
             if (dynamic.ReturnType == null || dynamic.ReturnType == typeof(void))
             {
-                il.MarkLabel(@return);
+                il.MarkLabel(noDelegates);
+                il.Emit(OpCodes.Pop);
+                il.MarkLabel(noSuragate);
             }
             else
             {
-                il.Emit(OpCodes.Ret);
-                il.MarkLabel(@return);
+                il.MarkLabel(noSuragate);
                 il.Emit(OpCodes.Ldnull);
+                il.MarkLabel(noDelegates);
             }
             il.Emit(OpCodes.Ret);
-            Delegate cDelegate = dynamic.CreateDelegate((a ?? b).GetType());
-            return cDelegate;
+            return dynamic.CreateDelegate((a ?? b).GetType());
         }
 
         public static T Remove<T>(T source, T value) where T : class
