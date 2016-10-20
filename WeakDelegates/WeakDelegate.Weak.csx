@@ -25,13 +25,17 @@ public static string GetFriendlyName(this Type type)
     return friendlyName;
 }
 
-Output.WriteLine("namespace WeakDelegates{public static partial class WeakDelegate{");
+Output.WriteLine("using static WeakDelegates.WeakDelegate;");
 
-foreach (Type type in (new[] { Assembly.GetAssembly(typeof(int)), Assembly.LoadWithPartialName("System"), Assembly.LoadWithPartialName("System.Core"), Assembly.LoadWithPartialName("Microsoft.CSharp") }).SelectMany(a => a.GetExportedTypes()).Where(t => t != typeof(MulticastDelegate) && typeof(MulticastDelegate).IsAssignableFrom(t) && t.IsPublic))
+foreach (IGrouping<string, Type> typesInNamespace in (new[] { Assembly.GetAssembly(typeof(int)), Assembly.LoadWithPartialName("System"), Assembly.LoadWithPartialName("System.Core"), Assembly.LoadWithPartialName("Microsoft.CSharp") }).SelectMany(a => a.GetExportedTypes()).Where(t => t != typeof(MulticastDelegate) && typeof(MulticastDelegate).IsAssignableFrom(t) && t.IsPublic).GroupBy(t => t.Namespace))
 {
-    string name = type.GetFriendlyName();
-    string args = type.IsGenericType ? name.Substring(name.IndexOf('<')) : string.Empty;
-    string notClsCompliant = (type.GetCustomAttribute<CLSCompliantAttribute>()?.IsCompliant ?? true) ? string.Empty : "[System.CLSCompliant(false)]";
-    Output.WriteLine($"{notClsCompliant}public static {type.Namespace}.{name} Weak{args}({type.Namespace}.{name} @delegate) => Combine(null, @delegate);");
+    Output.WriteLine($"namespace {typesInNamespace.Key}{Environment.NewLine}{{{Environment.NewLine}\tpublic static class WeakDelegateHelpers{Environment.NewLine}\t{{");
+    foreach(Type type in typesInNamespace)
+    {
+        string name = type.GetFriendlyName();
+        string args = type.IsGenericType ? name.Substring(name.IndexOf('<')) : string.Empty;
+        string notClsCompliant = (type.GetCustomAttribute<CLSCompliantAttribute>()?.IsCompliant ?? true) ? string.Empty : "[System.CLSCompliant(false)]";
+        Output.WriteLine($"\t\t{notClsCompliant}public static {name} Weak{args}({name} @delegate) => Combine(null, @delegate);");
+    }
+    Output.WriteLine($"\t}}{Environment.NewLine}}}");
 }
-Output.WriteLine("}}");

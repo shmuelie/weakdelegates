@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using static WeakDelegates.WeakDelegate;
+using static System.Collections.Specialized.WeakDelegateHelpers;
 
 namespace WeakTest
 {
