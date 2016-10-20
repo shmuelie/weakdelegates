@@ -34,13 +34,12 @@ namespace WeakDelegates
         /// <typeparam name="TDelegate">The type of delegate to combine.</typeparam>
         /// <param name="first">The delegate whose invocation list comes first.</param>
         /// <param name="last">The delegate whose invocation list comes last.</param>
-        /// <returns>A new delegate with a weak connection to both <paramref name="first"/> and <paramref name="last"/>. If either is <see langword="null"/>, returns a delegate with a weak connection to just that parameter.</returns>
-        /// <exception cref="ArgumentException">Both arguments cannot be <see langword="null"/>.</exception>
+        /// <returns>A new delegate with a weak connection to both <paramref name="first"/> and <paramref name="last"/>. If one is <see langword="null"/> but the other is not, returns a delegate with a weak connection to just that the parameter that is not <see langword="null"/>. If both are <see langword="null"/>, returns <see langword="null"/>.</returns>
         public static TDelegate Combine<[DelegateConstraint]TDelegate>(TDelegate first, TDelegate last) where TDelegate : class
         {
             if (ReferenceEquals(first, null) && ReferenceEquals(last, null))
             {
-                throw new ArgumentException("Both arguments cannot be null");
+                return null;
             }
             Delegate firstDelegate = first as Delegate;
             Delegate lastDelegate = last as Delegate;
