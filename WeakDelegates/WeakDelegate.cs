@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+using ExtraConstraints;
 
 namespace WeakDelegates
 {
-    public static partial class WeakDelegate
+    [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix", Justification = "Class is designed to mimic Delegate's API surface so name is there to help with that")]
+    public static class WeakDelegate
     {
         private static readonly ConditionalWeakTable<MethodBase, WeakReference<WeakDelegateSuragate>> suragates = new ConditionalWeakTable<MethodBase, WeakReference<WeakDelegateSuragate>>();
         private static readonly ConditionalWeakTable<object, WeakDelegateSuragate> weakReference = new ConditionalWeakTable<object, WeakDelegateSuragate>();
@@ -25,52 +28,51 @@ namespace WeakDelegates
             return false;
         }
 
-        public static T Combine<T>(T a, T b) where T : class
+        public static T Combine<[DelegateConstraint]T>(T left, T right) where T : class
         {
-            if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
+            if (ReferenceEquals(left, null) && ReferenceEquals(right, null))
             {
                 throw new ArgumentException("Both arguments cannot be null");
             }
-            CheckIsDelegate<T>();
-            Delegate aDelegate = a as Delegate;
-            Delegate bDelegate = b as Delegate;
-            Delegate cDelegate = CreateDynamicDelegate(a, b, aDelegate, bDelegate);
-            WeakDelegateSuragate aSuragate = null;
-            if (aDelegate != null)
+            Delegate leftDelegate = left as Delegate;
+            Delegate rightDelegate = right as Delegate;
+            Delegate finalDelegate = CreateDynamicDelegate(left, right, leftDelegate, rightDelegate);
+            WeakDelegateSuragate leftSuragate = null;
+            if (leftDelegate != null)
             {
-                GetCombinedHolder(aDelegate.Method, out aSuragate);
+                GetCombinedHolder(leftDelegate.Method, out leftSuragate);
             }
-            WeakDelegateSuragate bSuragate = null;
-            if (bDelegate != null)
+            WeakDelegateSuragate rightSuragate = null;
+            if (rightDelegate != null)
             {
-                GetCombinedHolder(bDelegate.Method, out bSuragate);
+                GetCombinedHolder(rightDelegate.Method, out rightSuragate);
             }
-            WeakDelegateSuragate cSuragate = aSuragate != null ? bSuragate != null ? aSuragate.Add(bSuragate) : bDelegate != null ? aSuragate.Add(aDelegate) : aSuragate.Clone() : bSuragate != null ? aDelegate != null ? bSuragate.Add(aDelegate) : bSuragate.Clone() : aDelegate != null ? bDelegate != null ? new WeakDelegateSuragate(aDelegate, bDelegate) : new WeakDelegateSuragate(aDelegate) : new WeakDelegateSuragate(bDelegate);
-            suragates.Add(cDelegate.Method, new WeakReference<WeakDelegateSuragate>(cSuragate));
-            if (aDelegate != null && aDelegate.Target != null)
+            WeakDelegateSuragate finalSuragate = leftSuragate != null ? rightSuragate != null ? leftSuragate.Add(rightSuragate) : rightDelegate != null ? leftSuragate.Add(leftDelegate) : leftSuragate.Clone() : rightSuragate != null ? leftDelegate != null ? rightSuragate.Add(leftDelegate) : rightSuragate.Clone() : leftDelegate != null ? rightDelegate != null ? new WeakDelegateSuragate(leftDelegate, rightDelegate) : new WeakDelegateSuragate(leftDelegate) : new WeakDelegateSuragate(rightDelegate);
+            suragates.Add(finalDelegate.Method, new WeakReference<WeakDelegateSuragate>(finalSuragate));
+            if (leftDelegate != null && leftDelegate.Target != null)
             {
-                weakReference.Add(aDelegate.Target, cSuragate);
+                weakReference.Add(leftDelegate.Target, finalSuragate);
             }
-            if (bDelegate != null && bDelegate.Target != null)
+            if (rightDelegate != null && rightDelegate.Target != null)
             {
-                weakReference.Add(bDelegate.Target, cSuragate);
+                weakReference.Add(rightDelegate.Target, finalSuragate);
             }
-            return cDelegate as T;
+            return finalDelegate as T;
         }
 
-        private static Delegate CreateDynamicDelegate<T>(T a, T b, Delegate aDelegate, Delegate bDelegate) where T : class
+        private static Delegate CreateDynamicDelegate<T>(T left, T right, Delegate leftDelegate, Delegate rightDelegate) where T : class
         {
-            MethodInfo signature = aDelegate?.Method ?? bDelegate.Method;
+            MethodInfo signature = leftDelegate?.Method ?? rightDelegate.Method;
             DynamicMethod dynamic = new DynamicMethod(string.Empty, signature.ReturnType == typeof(void) ? null : signature.ReturnType, signature.GetParameters().Select(getParameterType).ToArray(), typeof(WeakDelegate));
             ILGenerator il = dynamic.GetILGenerator();
-            LocalBuilder holder = il.DeclareLocal(typeof(WeakDelegateSuragate));
+            LocalBuilder suragate = il.DeclareLocal(typeof(WeakDelegateSuragate));
             Label noSuragate = il.DefineLabel();
             Label noDelegates = il.DefineLabel();
             il.Emit(OpCodes.Call, typeof(MethodBase).GetMethod(nameof(MethodBase.GetCurrentMethod)));
-            il.Emit(OpCodes.Ldloca_S, holder);
+            il.Emit(OpCodes.Ldloca_S, suragate);
             il.Emit(OpCodes.Call, typeof(WeakDelegate).GetMethod(nameof(GetCombinedHolder), BindingFlags.NonPublic | BindingFlags.Static));
             il.Emit(OpCodes.Brfalse_S, noSuragate);
-            il.Emit(OpCodes.Ldloc_S, holder);
+            il.Emit(OpCodes.Ldloc_S, suragate);
             il.Emit(OpCodes.Callvirt, typeof(WeakDelegateSuragate).GetMethod(nameof(WeakDelegateSuragate.GetInvocationList), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public));
             il.Emit(OpCodes.Castclass, typeof(T));
             il.Emit(OpCodes.Dup);
@@ -94,12 +96,11 @@ namespace WeakDelegates
                 il.MarkLabel(noDelegates);
             }
             il.Emit(OpCodes.Ret);
-            return dynamic.CreateDelegate((a ?? b).GetType());
+            return dynamic.CreateDelegate((left ?? right).GetType());
         }
 
-        public static T Remove<T>(T source, T value) where T : class
+        public static T Remove<[DelegateConstraint]T>(T source, T value) where T : class
         {
-            CheckIsDelegate<T>();
             if (ReferenceEquals(source, null))
             {
                 return null;
@@ -115,14 +116,6 @@ namespace WeakDelegates
                 return newDelegate as T;
             }
             return Delegate.Remove(sourceDelegate, valueDelegate) as T;
-        }
-
-        private static void CheckIsDelegate<T>() where T : class
-        {
-            if (!typeof(T).IsSubclassOf(typeof(Delegate)))
-            {
-                throw new InvalidOperationException($"The generic type {nameof(T)} must be a delegate type. {typeof(T).FullName} is not.");
-            }
         }
     }
 }
