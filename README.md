@@ -27,3 +27,7 @@ namespace WeakDelegates
 Documentation for the same named static methods on `System.Delegate` should be the same. Only real difference is that I use generics and inforce that it must be a delegate type at run-time instead of forcing you to do lots of casting.
 
 The `T Weak<T>(T @delegate)` methods simply call `T Combine<T>(T a, T b)` with `a` set to `null` and `b` set to `@delegate`. The main advantage of using them is that you don't have to provide type arguments.
+
+## Why?
+
+See [The Problem With Delegates](https://web.archive.org/web/20150327023026/http://diditwith.net/PermaLink,guid,fcf59145-3973-468a-ae66-aaa8df9161c7.aspx) by Dustin Campbell.
