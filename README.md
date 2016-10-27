@@ -30,4 +30,4 @@ The `T Weak<T>(T @delegate)` methods simply call `T Combine<T>(T a, T b)` with `
 
 ## Why?
 
-See [The Problem With Delegates](https://web.archive.org/web/20150327023026/http://diditwith.net/PermaLink,guid,fcf59145-3973-468a-ae66-aaa8df9161c7.aspx) by Dustin Campbell.
+See [The Problem With Delegates](https://web.archive.org/web/20150327023026/http://diditwith.net/PermaLink,guid,fcf59145-3973-468a-ae66-aaa8df9161c7.aspx) by [Dustin Campbell](https://twitter.com/dcampbell).
