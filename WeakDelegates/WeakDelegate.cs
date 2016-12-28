@@ -15,7 +15,7 @@ namespace WeakDelegates
 		private static readonly ConditionalWeakTable<object, WeakDelegateSuragate> weakReference = new ConditionalWeakTable<object, WeakDelegateSuragate>();
 		private static readonly Func<ParameterInfo, Type> getParameterType = new Func<ParameterInfo, Type>(GetParameterType);
 		private static readonly Type voidType = typeof(void);
-		private static readonly MethodInfo getCurrentMethodMethodInfo;
+		private static readonly MethodInfo getCurrentMethodMethodInfo = typeof(MethodBase).GetMethod(nameof(MethodBase.GetCurrentMethod));
 		private static readonly MethodInfo getCombinedHolderMethodInfo;
 		private static readonly MethodInfo getInvocationListMethodInfo;
 		private static readonly Type weakDelegateType;
@@ -25,7 +25,6 @@ namespace WeakDelegates
 		{
 			weakDelegateType = typeof(WeakDelegate);
 			weakDelegateSuragateType = typeof(WeakDelegateSuragate);
-			getCurrentMethodMethodInfo = typeof(MethodBase).GetMethod(nameof(MethodBase.GetCurrentMethod));
 			getCombinedHolderMethodInfo = weakDelegateType.GetMethod(nameof(GetCombinedHolder), BindingFlags.NonPublic | BindingFlags.Static);
 			getInvocationListMethodInfo = weakDelegateSuragateType.GetMethod(nameof(WeakDelegateSuragate.GetInvocationList), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
 		}
