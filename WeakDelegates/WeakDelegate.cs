@@ -35,6 +35,7 @@ namespace WeakDelegates
 		/// <param name="first">The delegate whose invocation list comes first.</param>
 		/// <param name="last">The delegate whose invocation list comes last.</param>
 		/// <returns>A new delegate with a weak connection to both <paramref name="first"/> and <paramref name="last"/>. If one is <see langword="null"/> but the other is not, returns a delegate with a weak connection to just that the parameter that is not <see langword="null"/>. If both are <see langword="null"/>, returns <see langword="null"/>.</returns>
+		/// <seealso cref="Delegate.Combine(Delegate, Delegate)"/>
 		public static TDelegate Combine<[DelegateConstraint]TDelegate>(TDelegate first, TDelegate last) where TDelegate : class
 		{
 			if (ReferenceEquals(first, null) && ReferenceEquals(last, null))
@@ -113,6 +114,7 @@ namespace WeakDelegates
 		/// <param name="source">The delegate from which to remove the invocation list of <paramref name="value"/>.</param>
 		/// <param name="value">The delegate that supplies the invocation list to remove from the invocation list of <paramref name="source"/>.</param>
 		/// <returns>A new delegate with an invocation list formed by taking the invocation list of <paramref name="source"/> and removing the last occurrence of the invocation list of <paramref name="value"/>, if the invocation list of <paramref name="value"/> is found within the invocation list of <paramref name="source"/>. Returns <paramref name="source"/> if <paramref name="value"/> is <see langword="null"/> or if the invocation list of <paramref name="value"/> is not found within the invocation list of <paramref name="source"/>. Returns <see langword="null"/> if the invocation list of <paramref name="value"/> is equal to the invocation list of <paramref name="source"/> or if <paramref name="source"/> is <see langword="null"/>.</returns>
+		/// <seealso cref="Delegate.Remove(Delegate, Delegate)"/>
 		public static TDelegate Remove<[DelegateConstraint]TDelegate>(TDelegate source, TDelegate value) where TDelegate : class
 		{
 			if (ReferenceEquals(source, null))
