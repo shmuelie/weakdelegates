@@ -20,25 +20,14 @@ namespace WeakDelegates
 		{
 			private IntPtr handle;
 
-			public bool IsAllocated => handle != (IntPtr)0;
+			public bool IsAllocated => handle != IntPtr.Zero;
 
 			[SecurityCritical]
 			public DependentHandle(TPrimary primary, TSecondary secondary)
 			{
-				IntPtr intPtr = (IntPtr)0;
+				IntPtr intPtr;
 				InternalMethods.nInitialize(primary, secondary, out intPtr);
 				this.handle = intPtr;
-			}
-
-			[SecurityCritical]
-			public void Free()
-			{
-				if (handle != (IntPtr)0)
-				{
-					IntPtr intPtr = handle;
-					handle = (IntPtr)0;
-					InternalMethods.nFree(intPtr);
-				}
 			}
 
 			[SecurityCritical]
@@ -83,9 +72,15 @@ namespace WeakDelegates
 				return true;
 			}
 
+			[SecurityCritical]
 			public void Dispose()
 			{
-				Free();
+				if (handle != IntPtr.Zero)
+				{
+					IntPtr intPtr = handle;
+					handle = IntPtr.Zero;
+					InternalMethods.nFree(intPtr);
+				}
 			}
 
 			public override string ToString() => IsAllocated.ToString();
