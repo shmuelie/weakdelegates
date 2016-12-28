@@ -1,12 +1,12 @@
 # Weak Delegates for .NET
 
-While there are many systems out there for weak events/delegates in .NET they generally suffer from one more flaws:
+While there are many systems out there for weak events/delegates in .NET they generally suffer from one or more of the following flaws:
 
 1. They only work with `System.EventHander` and `System.EventHander<T>`.
-2. They leave bing memory that may never be cleaned up.
-3. They're syntax/usage is extremely different from using strong delegates.
+2. The leak memory that is only cleaned up sometimes if at all.
+3. Their syntax/usage is extremely different from using strong delegates.
 
-Not liking these issue I've created this experiment repository where I can try create a system that has none of those issues. Currently issue #1 is completely solved, this system with work with any delegate type. Issue #2 is mostly there, though there is work to be done. Issue #3 is sadly still unsolved, though I have some thoughts on what I can do.
+Not liking these issue I've created this experiment repository where I can try create a system that has none of those issues. Currently issue #1 is completely solved, this system with work with any delegate type. Issue #2 is mostly there, though there is work to be done. Issue #3 is sadly still unsolved, though I have implemented some helper methods to improve the situation.
 
 ## API
 
