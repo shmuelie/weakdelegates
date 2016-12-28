@@ -28,6 +28,42 @@ Documentation for the same named static methods on `System.Delegate` should be t
 
 The `T Weak<T>(T @delegate)` methods simply call `T Combine<T>(T a, T b)` with `a` set to `null` and `b` set to `@delegate`. The main advantage of using them is that you don't have to provide type arguments.
 
+### Example
+
+```csharp
+using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using static System.Collections.Specialized.WeakDelegateHelpers;
+
+namespace WeakTest
+{
+    class Program
+    {
+        private class TestClass
+        {
+            private DateTime created = DateTime.UtcNow;
+
+            public void Handle(object sender, NotifyCollectionChangedEventArgs e)
+            {
+                Console.WriteLine(e.NewItems[0]);
+            }
+        }
+
+        public static void Main()
+        {
+            ObservableCollection<int> collection = new ObservableCollection<int>();
+            TestClass testInstance = new TestClass();
+            // Using one of the helper methods
+            collection.CollectionChanged += Weak(testInstance.Handle);
+            // Which is the same as...
+            collection.CollectionChanged += WeakDelegates.WeakDelegate.Combine<NotifyCollectionChangedEventHandler>(null, testInstance.Handle);
+        }
+    }
+}
+
+```
+
 ## Why?
 
 See [The Problem With Delegates](https://web.archive.org/web/20150327023026/http://diditwith.net/PermaLink,guid,fcf59145-3973-468a-ae66-aaa8df9161c7.aspx) by [Dustin Campbell](https://twitter.com/dcampbell).
