@@ -31,3 +31,9 @@ The `T Weak<T>(T @delegate)` methods simply call `T Combine<T>(T a, T b)` with `
 ## Why?
 
 See [The Problem With Delegates](https://web.archive.org/web/20150327023026/http://diditwith.net/PermaLink,guid,fcf59145-3973-468a-ae66-aaa8df9161c7.aspx) by [Dustin Campbell](https://twitter.com/dcampbell).
+
+## Issues
+
+1. Runtime code generation means that this will not work with .NET Native.
+   a. This can be solved in theory by having the dynamic methods created at compile time.
+2. Slower than strong delegates. Not much can be done here without writing raw IL instead of C#.
