@@ -14,6 +14,21 @@ namespace WeakDelegates
 		private static readonly ConditionalWeakTable<MethodBase, WeakReference<WeakDelegateSuragate>> suragates = new ConditionalWeakTable<MethodBase, WeakReference<WeakDelegateSuragate>>();
 		private static readonly ConditionalWeakTable<object, WeakDelegateSuragate> weakReference = new ConditionalWeakTable<object, WeakDelegateSuragate>();
 		private static readonly Func<ParameterInfo, Type> getParameterType = new Func<ParameterInfo, Type>(GetParameterType);
+		private static readonly Type voidType = typeof(void);
+		private static readonly MethodInfo getCurrentMethodMethodInfo;
+		private static readonly MethodInfo getCombinedHolderMethodInfo;
+		private static readonly MethodInfo getInvocationListMethodInfo;
+		private static readonly Type weakDelegateType;
+		private static readonly Type weakDelegateSuragateType;
+
+		static WeakDelegate()
+		{
+			weakDelegateType = typeof(WeakDelegate);
+			weakDelegateSuragateType = typeof(WeakDelegateSuragate);
+			getCurrentMethodMethodInfo = typeof(MethodBase).GetMethod(nameof(MethodBase.GetCurrentMethod));
+			getCombinedHolderMethodInfo = weakDelegateType.GetMethod(nameof(GetCombinedHolder), BindingFlags.NonPublic | BindingFlags.Static);
+			getInvocationListMethodInfo = weakDelegateSuragateType.GetMethod(nameof(WeakDelegateSuragate.GetInvocationList), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+		}
 
 		private static Type GetParameterType(ParameterInfo p) => p.ParameterType;
 
@@ -71,17 +86,17 @@ namespace WeakDelegates
 		private static Delegate CreateDynamicDelegate<TDelegate>(TDelegate first, TDelegate last, Delegate firstDelegate, Delegate lastDelegate) where TDelegate : class
 		{
 			MethodInfo signature = firstDelegate?.Method ?? lastDelegate.Method;
-			DynamicMethod dynamic = new DynamicMethod(string.Empty, signature.ReturnType == typeof(void) ? null : signature.ReturnType, signature.GetParameters().Select(getParameterType).ToArray(), typeof(WeakDelegate));
+			DynamicMethod dynamic = new DynamicMethod(string.Empty, signature.ReturnType == voidType ? null : signature.ReturnType, signature.GetParameters().Select(getParameterType).ToArray(), weakDelegateType);
 			ILGenerator il = dynamic.GetILGenerator();
-			LocalBuilder suragate = il.DeclareLocal(typeof(WeakDelegateSuragate));
+			LocalBuilder suragate = il.DeclareLocal(weakDelegateSuragateType);
 			Label noSuragate = il.DefineLabel();
 			Label noDelegates = il.DefineLabel();
-			il.Emit(OpCodes.Call, typeof(MethodBase).GetMethod(nameof(MethodBase.GetCurrentMethod)));
+			il.Emit(OpCodes.Call, getCurrentMethodMethodInfo);
 			il.Emit(OpCodes.Ldloca_S, suragate);
-			il.Emit(OpCodes.Call, typeof(WeakDelegate).GetMethod(nameof(GetCombinedHolder), BindingFlags.NonPublic | BindingFlags.Static));
+			il.Emit(OpCodes.Call, getCombinedHolderMethodInfo);
 			il.Emit(OpCodes.Brfalse_S, noSuragate);
 			il.Emit(OpCodes.Ldloc_S, suragate);
-			il.Emit(OpCodes.Callvirt, typeof(WeakDelegateSuragate).GetMethod(nameof(WeakDelegateSuragate.GetInvocationList), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public));
+			il.Emit(OpCodes.Callvirt, getInvocationListMethodInfo);
 			il.Emit(OpCodes.Castclass, typeof(TDelegate));
 			il.Emit(OpCodes.Dup);
 			il.Emit(OpCodes.Brfalse_S, noDelegates);
@@ -91,7 +106,7 @@ namespace WeakDelegates
 			}
 			il.Emit(OpCodes.Callvirt, typeof(TDelegate).GetMethod("Invoke"));
 			il.Emit(OpCodes.Ret);
-			if (dynamic.ReturnType == null || dynamic.ReturnType == typeof(void))
+			if (dynamic.ReturnType == null || dynamic.ReturnType == voidType)
 			{
 				il.MarkLabel(noDelegates);
 				il.Emit(OpCodes.Pop);
