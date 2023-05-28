@@ -6,7 +6,7 @@ While there are many systems out there for weak events/delegates in .NET they ge
 2. The leak memory that is only cleaned up sometimes if at all.
 3. Their syntax/usage is extremely different from using strong delegates.
 
-Not liking these issue I've created this experiment repository where I can try create a system that has none of those issues. Currently issue #1 is completely solved, this system with work with any delegate type. Issue #2 is mostly there, though there is work to be done. Issue #3 is sadly still unsolved, though I have implemented some helper methods to improve the situation.
+Not liking these issue I've created this experiment repository where I can try create a system that has none of those issues. Currently issue #1 is completely solved, this system with work with any delegate type. Issue #2 is mostly there, though there is work to be done. Issue #3 is sadly still unsolved.
 
 ## API
 
@@ -25,8 +25,6 @@ namespace WeakDelegates
 ```
 
 Documentation for the same named static methods on `System.Delegate` should be the same. Only real difference is that I use generics and enforce that it must be a delegate type at run-time instead of forcing you to do lots of casting.
-
-The `T Weak<T>(T @delegate)` methods simply call `T Combine<T>(T a, T b)` with `a` set to `null` and `b` set to `@delegate`. The main advantage of using them is that you don't have to provide type arguments.
 
 ### Example
 
@@ -54,9 +52,6 @@ namespace WeakTest
         {
             ObservableCollection<int> collection = new ObservableCollection<int>();
             TestClass testInstance = new TestClass();
-            // Using one of the helper methods
-            collection.CollectionChanged += Weak(testInstance.Handle);
-            // Which is the same as...
             collection.CollectionChanged += WeakDelegates.WeakDelegate.Combine<NotifyCollectionChangedEventHandler>(null, testInstance.Handle);
         }
     }
