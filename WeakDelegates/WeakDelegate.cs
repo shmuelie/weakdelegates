@@ -143,5 +143,44 @@ namespace WeakDelegates
             }
             return Delegate.Remove(sourceDelegate, valueDelegate) as TDelegate;
         }
+
+        /// <summary>
+        /// 	Removes the last occurrence of the invocation list of a delegate from the invocation list of an event's backing field.
+        /// </summary>
+        /// <typeparam name="TDelegate">The type of the delegate.</typeparam>
+        /// <param name="eventContainer">The instance that has the event.</param>
+        /// <param name="eventName">The name of the event.</param>
+        /// <param name="value">The delegate that supplies the invocation list to remove from the invocation list of the event.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="eventContainer"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="eventName"/> is <see langword="null"/>, empty, only whitespace, or is not the name of an event on <paramref name="eventContainer"/>.</exception>
+        /// <remarks>This only works on auto events.</remarks>
+        public static void Remove<[DelegateConstraint] TDelegate>(object eventContainer, string eventName, TDelegate value) where TDelegate : class
+        {
+            if (eventContainer is null)
+            {
+                throw new ArgumentNullException(nameof(eventContainer));
+            }
+            if (string.IsNullOrWhiteSpace(eventName))
+            {
+                throw new ArgumentException($"{nameof(eventName)} is null, empty or only whitespace.", nameof(eventName));
+            }
+
+            if (value is null)
+            {
+                return;
+            }
+
+            Type containingType = eventContainer.GetType();
+            FieldInfo eventBackingField = containingType.GetField(eventName, BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (eventBackingField is null)
+            {
+                throw new ArgumentException($"No event backing field matches {nameof(eventName)}.", nameof(eventName));
+            }
+
+            TDelegate source = eventBackingField.GetValue(eventContainer) as TDelegate;
+            source = Remove(source, value);
+            eventBackingField.SetValue(eventContainer, source);
+        }
     }
 }

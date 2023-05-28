@@ -21,12 +21,17 @@ namespace WeakDelegates
     public static T Combine<T>(T a, T b) where T : class;
     // Usage is the same as System.Delegate.Remove(Delegate, Delegate);
     public static T Remove<T>(T source, T value) where T : class;
+    // Allows removing weak delegates when you don't have access to the delegate field directly.
+    public static void Remove<T>(object eventContainer, string eventName, T value) where T : class
 }
 ```
 
 Documentation for the same named static methods on `System.Delegate` should be
 the same. Only real difference is that I use generics and enforce that it must
 be a delegate type at run-time instead of forcing you to do lots of casting.
+
+The `Remove<T>(object eventContainer, string eventName, T value) where T :
+class` method can be used to unsubscribe weak delegates from events.
 
 ### Example
 
@@ -54,7 +59,10 @@ namespace WeakTest
         {
             ObservableCollection<int> collection = new ObservableCollection<int>();
             TestClass testInstance = new TestClass();
+            // To subscribe
             collection.CollectionChanged += WeakDelegates.WeakDelegate.Combine<NotifyCollectionChangedEventHandler>(null, testInstance.Handle);
+            // to unsubscribe
+            WeakDelegates.WeakDelegate.Remove<NotifyCollectionChangedEventHandler>(collection, nameof(collection.CollectionChanged), testInstance.Handle);
         }
     }
 }

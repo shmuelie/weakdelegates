@@ -28,6 +28,7 @@ namespace WeakTest
             GC.Collect();
             collection.Add(2);
             testInstance.Handle(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, 3));
+            WeakDelegates.WeakDelegate.Remove<NotifyCollectionChangedEventHandler>(collection, nameof(collection.CollectionChanged), testInstance.Handle);
             Console.ReadLine();
         }
     }
