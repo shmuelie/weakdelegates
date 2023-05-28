@@ -14,7 +14,10 @@ namespace WeakDelegates
 
         ~GarbageAlerter()
         {
-            Task.Run(onAlert);
+            if (onAlert != null)
+            {
+                Task.Run(onAlert);
+            }
         }
     }
 }

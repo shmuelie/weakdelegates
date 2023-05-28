@@ -32,7 +32,7 @@ namespace WeakDelegates
         public DelegateBreakout(Delegate @delegate, Action onCollection)
         {
             delegateString = @delegate.Method.ToString();
-            if (@delegate.Target != null && onCollection != null)
+            if (@delegate.Target != null)
             {
                 delegateOrMethodInfo = @delegate.Method;
                 target = new DependentHandle<object, GarbageAlerter>(@delegate.Target, new GarbageAlerter(onCollection));
@@ -71,8 +71,8 @@ namespace WeakDelegates
 
             if (methodInfo is null && methodInfoOther is null)
             {
-            return ((WeakReference<Delegate>)delegateOrMethodInfo).TryGetTarget(out Delegate @delegate) && ((WeakReference<Delegate>)other.delegateOrMethodInfo).TryGetTarget(out Delegate delegateOther) && @delegate == delegateOther;
-        }
+                return ((WeakReference<Delegate>)delegateOrMethodInfo).TryGetTarget(out Delegate @delegate) && ((WeakReference<Delegate>)other.delegateOrMethodInfo).TryGetTarget(out Delegate delegateOther) && @delegate == delegateOther;
+            }
 
             return false;
         }
