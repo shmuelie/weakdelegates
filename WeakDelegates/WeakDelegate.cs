@@ -43,7 +43,7 @@ namespace WeakDelegates
 		}
 
 		/// <summary>
-		///     Concatenates the invocation lists of two delegates.
+		/// Concatenates the invocation lists of two delegates.
 		/// </summary>
 		/// <typeparam name="TDelegate">The type of delegate to combine.</typeparam>
 		/// <param name="first">The delegate whose invocation list comes first.</param>
@@ -122,7 +122,7 @@ namespace WeakDelegates
 		}
 
 		/// <summary>
-		///		Removes the last occurrence of the invocation list of a delegate from the invocation list of another delegate.
+		///	Removes the last occurrence of the invocation list of a delegate from the invocation list of another delegate.
 		/// </summary>
 		/// <typeparam name="TDelegate">The type of the delegate.</typeparam>
 		/// <param name="source">The delegate from which to remove the invocation list of <paramref name="value"/>.</param>

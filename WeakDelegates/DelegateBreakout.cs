@@ -5,27 +5,27 @@ using static WeakDelegates.DependentHandlerStatic;
 namespace WeakDelegates
 {
 	/// <summary>
-	///		A <see cref="Delegate"/> broken out into parts.
+	///	A <see cref="Delegate"/> broken out into parts.
 	/// </summary>
 	/// <seealso cref="IDisposable" />
-	/// <seealso cref="System.IEquatable{T}" />
+	/// <seealso cref="IEquatable{T}" />
 	internal struct DelegateBreakout : IDisposable, IEquatable<DelegateBreakout>
 	{
 		/// <summary>
-		///		The delegate or method information
+		///	The delegate or method information
 		/// </summary>
 		private readonly object delegateOrMethodInfo;
 		/// <summary>
-		///		The target of the delegate
+		///	The target of the delegate
 		/// </summary>
 		private readonly DependentHandle<object, GarbageAlerter>? target;
 		/// <summary>
-		///		Text representation of the original delegate.
+		///	Text representation of the original delegate.
 		/// </summary>
 		private readonly string delegateString;
 
 		/// <summary>
-		///		Initializes a new instance of the <see cref="DelegateBreakout"/> struct.
+		///	Initializes a new instance of the <see cref="DelegateBreakout"/> struct.
 		/// </summary>
 		/// <param name="delegate">The delegate.</param>
 		/// <param name="onCollection">The method to invoke when <paramref name="delegate"/>'s target is garbage collected.</param>
@@ -45,7 +45,7 @@ namespace WeakDelegates
 		}
 
 		/// <summary>
-		///		Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		///	Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
 		public void Dispose()
 		{
@@ -56,12 +56,10 @@ namespace WeakDelegates
 		}
 
 		/// <summary>
-		///		Indicates whether the current <see cref="DelegateBreakout"/> is equal to another <see cref="DelegateBreakout"/>.
+		///	Indicates whether the current <see cref="DelegateBreakout"/> is equal to another <see cref="DelegateBreakout"/>.
 		/// </summary>
 		/// <param name="other">A <see cref="DelegateBreakout"/> to compare with this <see cref="DelegateBreakout"/>.</param>
-		/// <returns>
-		///		<see langword="true"/> if the current <see cref="DelegateBreakout"/> is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false"/>.
-		/// </returns>
+		/// <returns><see langword="true"/> if the current <see cref="DelegateBreakout"/> is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false"/>.</returns>
 		public bool Equals(DelegateBreakout other)
 		{
 			MethodInfo methodInfo = delegateOrMethodInfo as MethodInfo;
@@ -76,7 +74,7 @@ namespace WeakDelegates
 		}
 
 		/// <summary>
-		///		Tries to get the delegate.
+		///	Tries to get the delegate.
 		/// </summary>
 		/// <param name="delegateType">Type of the delegate.</param>
 		/// <param name="delegate">The delegate.</param>
@@ -108,12 +106,10 @@ namespace WeakDelegates
 		public static bool operator !=(DelegateBreakout left, DelegateBreakout right) => !left.Equals(right);
 
 		/// <summary>
-		///		Determines whether the specified <see cref="object" />, is equal to this instance.
+		///	Determines whether the specified <see cref="object" />, is equal to this instance.
 		/// </summary>
 		/// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
-		/// <returns>
-		///   <see langword="true"/> if the specified <see cref="object" /> is equal to this instance; otherwise, <see langword="false"/>.
-		/// </returns>
+		/// <returns><see langword="true"/> if the specified <see cref="object" /> is equal to this instance; otherwise, <see langword="false"/>.</returns>
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(obj, null))
@@ -128,27 +124,21 @@ namespace WeakDelegates
 		}
 
 		/// <summary>
-		///		Returns a hash code for this instance.
+		///	Returns a hash code for this instance.
 		/// </summary>
-		/// <returns>
-		///		A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-		/// </returns>
+		/// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
 		public override int GetHashCode() => delegateOrMethodInfo.GetHashCode();
 
 		/// <summary>
-		///		Returns a <see cref="string" /> that represents this instance.
+		///	Returns a <see cref="string" /> that represents this instance.
 		/// </summary>
-		/// <returns>
-		///		A <see cref="string" /> that represents this instance.
-		/// </returns>
+		/// <returns>A <see cref="string" /> that represents this instance.</returns>
 		public override string ToString() => delegateString;
 
 		/// <summary>
-		///		Gets a value indicating whether this <see cref="DelegateBreakout"/> is alive.
+		///	Gets a value indicating whether this <see cref="DelegateBreakout"/> is alive.
 		/// </summary>
-		/// <value>
-		///		<see langword="true"/> if alive; otherwise, <see langword="false"/>.
-		/// </value>
+		/// <value><see langword="true"/> if alive; otherwise, <see langword="false"/>.</value>
 		public bool Alive
 		{
 			get
