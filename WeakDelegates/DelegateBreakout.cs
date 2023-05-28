@@ -64,11 +64,17 @@ namespace WeakDelegates
         {
             MethodInfo methodInfo = delegateOrMethodInfo as MethodInfo;
             MethodInfo methodInfoOther = other.delegateOrMethodInfo as MethodInfo;
-            if (methodInfo != null && methodInfoOther != null && string.Equals(methodInfo.ToString(), methodInfoOther.ToString(), StringComparison.Ordinal))
+            if (methodInfo != null && methodInfoOther != null)
             {
-                return true;
+                return string.Equals(methodInfo.ToString(), methodInfoOther.ToString(), StringComparison.Ordinal);
             }
+
+            if (methodInfo is null && methodInfoOther is null)
+            {
             return ((WeakReference<Delegate>)delegateOrMethodInfo).TryGetTarget(out Delegate @delegate) && ((WeakReference<Delegate>)other.delegateOrMethodInfo).TryGetTarget(out Delegate delegateOther) && @delegate == delegateOther;
+        }
+
+            return false;
         }
 
         /// <summary>
