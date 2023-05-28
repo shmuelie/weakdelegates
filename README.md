@@ -1,12 +1,16 @@
 # Weak Delegates for .NET
 
-While there are many systems out there for weak events/delegates in .NET they generally suffer from one or more of the following flaws:
+While there are many systems out there for weak events/delegates in .NET they
+generally suffer from one or more of the following flaws:
 
 1. They only work with `System.EventHander` and `System.EventHander<T>`.
 2. The leak memory that is only cleaned up sometimes if at all.
 3. Their syntax/usage is extremely different from using strong delegates.
 
-Not liking these issue I've created this experiment repository where I can try create a system that has none of those issues. Currently issue #1 is completely solved, this system with work with any delegate type. Issue #2 is mostly there, though there is work to be done. Issue #3 is sadly still unsolved.
+Not liking these issue I've created this experiment repository where I can try
+create a system that has none of those issues. Currently issue #1 is completely
+solved, this system with work with any delegate type. Issue #2 is mostly there,
+though there is work to be done. Issue #3 is sadly still unsolved.
 
 ## API
 
@@ -24,7 +28,9 @@ namespace WeakDelegates
 }
 ```
 
-Documentation for the same named static methods on `System.Delegate` should be the same. Only real difference is that I use generics and enforce that it must be a delegate type at run-time instead of forcing you to do lots of casting.
+Documentation for the same named static methods on `System.Delegate` should be
+the same. Only real difference is that I use generics and enforce that it must
+be a delegate type at run-time instead of forcing you to do lots of casting.
 
 ### Example
 
@@ -61,10 +67,14 @@ namespace WeakTest
 
 ## Why?
 
-See [The Problem With Delegates](https://web.archive.org/web/20150327023026/http://diditwith.net/PermaLink,guid,fcf59145-3973-468a-ae66-aaa8df9161c7.aspx) by [Dustin Campbell](https://twitter.com/dcampbell).
+See [The Problem With
+Delegates](https://web.archive.org/web/20150327023026/http://diditwith.net/PermaLink,guid,fcf59145-3973-468a-ae66-aaa8df9161c7.aspx)
+by [Dustin Campbell](https://twitter.com/dcampbell).
 
 ## Issues
 
-1. Runtime code generation means that this will not work with .NET Native.
-   a. This can be solved in theory by having the dynamic methods created at compile time.
-2. Slower than strong delegates. Not much can be done here without writing raw IL instead of C#.
+1. Runtime code generation means that this will not work with .NET Native. This
+   can be solved in theory by having the dynamic methods created at compile
+   time.
+2. Slower than strong delegates. Not much can be done here without writing raw
+   IL instead of C#.
