@@ -12,6 +12,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeakDelegates", "WeakDelegates\WeakDelegates.csproj", "{28006B11-6F79-4598-93AA-47ED4FEC7A2E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeakTest", "WeakTest\WeakTest.csproj", "{9FADA444-F352-4B89-9C44-1C5445A81BCD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{28006B11-6F79-4598-93AA-47ED4FEC7A2E} = {28006B11-6F79-4598-93AA-47ED4FEC7A2E}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
