@@ -21,10 +21,6 @@ namespace WeakDelegates
     public static T Combine<T>(T a, T b) where T : class;
     // Usage is the same as System.Delegate.Remove(Delegate, Delegate);
     public static T Remove<T>(T source, T value) where T : class;
-    // This method is psuedo code.
-    // In reality it's a bunch of generated methods for common
-    // delegate types of this form.
-    public static T Weak<T>(T @delegate) where T : delegate;
 }
 ```
 
