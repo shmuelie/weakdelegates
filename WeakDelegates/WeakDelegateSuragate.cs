@@ -12,17 +12,13 @@ namespace WeakDelegates
         public WeakDelegateSuragate(Delegate @delegate)
         {
             delegateType = @delegate.GetType();
-#pragma warning disable CC0022 // Should dispose object
             delegates = new DelegateBreakout[] { new DelegateBreakout(@delegate, Clean) };
-#pragma warning restore CC0022 // Should dispose object
         }
 
         public WeakDelegateSuragate(Delegate a, Delegate b)
         {
             delegateType = a.GetType();
-#pragma warning disable CC0022 // Should dispose object
             delegates = new DelegateBreakout[] { new DelegateBreakout(a, Clean), new DelegateBreakout(b, Clean) };
-#pragma warning restore CC0022 // Should dispose object
         }
 
         [Obsolete("", true)]
@@ -92,8 +88,7 @@ namespace WeakDelegates
             for (int delegateIndex = 0; delegateIndex < currentDelegates.Length; delegateIndex++)
             {
                 DelegateBreakout breakout = currentDelegates[delegateIndex];
-                Delegate @delegate;
-                if (breakout.TryGetDelegate(delegateType, out @delegate))
+                if (breakout.TryGetDelegate(delegateType, out Delegate @delegate))
                 {
                     resultDelegate = Delegate.Combine(resultDelegate, @delegate);
                 }
